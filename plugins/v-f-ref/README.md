@@ -141,7 +141,7 @@ C组件`inject`注入接口函数：
    <h2 v-f-ref="c => setChildrenRef('ChildrenC-h2', c)">C 结点</h2>
    <ChildrenE v-if="isE" />
    <ChildrenF />
-	 
+
    <button @click="removeHandler">解除E组件</button>
   </div>
 </template>
@@ -177,7 +177,7 @@ D组件：
 <template>
   <div class="border1">
     <h2>D 结点</h2>
-    <ChildrenH v-ant-ref="c => setChildrenRef('childrenH', c)" />
+    <ChildrenH v-f-ref="c => setChildrenRef('childrenH', c)" />
   </div>
 </template>
 import ChildrenH from './ChildrenH'
