@@ -140,7 +140,8 @@ C组件`inject`注入接口函数：
   <div>
    <h2 v-f-ref="c => setChildrenRef('ChildrenC-h2', c)">C 结点</h2>
    <ChildrenE v-if="isE" />
-   
+   <ChildrenF />
+	 
    <button @click="removeHandler">解除E组件</button>
   </div>
 </template>
