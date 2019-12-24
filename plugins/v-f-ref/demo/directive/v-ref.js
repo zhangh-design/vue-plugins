@@ -10,7 +10,7 @@ import _isEmpty from 'lodash/isEmpty'
  * 获取跨层级子孙组件实例
  */
 export default {
-  install: function (Vue, options) {
+  install: function (Vue, options = {}) {
     const directiveName = _get(options, 'name', 'f-ref')
     Vue.directive(directiveName, {
       bind (el, binding, vNode) {
