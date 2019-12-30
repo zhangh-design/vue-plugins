@@ -8,6 +8,15 @@
 - 组件更新主动通知父组件更新绑定组件的实例。
 - 父组件缓存子组件实例不用每次去获取。
 
+`main.js` 注册`v-ref`插件
+
+`v-f-ref`是插件内置的名称，如果需要修改可以在`Vue.use`时自定义。
+```
+// 导入
+import callRef from './directive/v-ref.js'
+// 使用
+Vue.use(callRef, { name: 'f-ref' })
+```
 
 场景：A组件有B、C、D三个子组件，B组件有一个J子组件，C组件有E、F两个子组件。
 
