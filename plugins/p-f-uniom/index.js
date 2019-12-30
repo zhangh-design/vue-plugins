@@ -50,7 +50,7 @@ const emitEvent = function (method, toKey, aim, args) {
       // 分组
       const group = _get(vmMap.get(scope), 'group', [])
       const name = _get(scope, unicomGroupName, [])
-      const ns = name ? _strToArray(name) : []
+      const ns = name ? _intersection(group, _strToArray(name)) : []
       if ((_isEmpty(group) || _isEqual(_includes(group, toKey), false)) && _isEqual(ns.includes(toKey), false)) {
         // 目标不存在
         continue
@@ -133,8 +133,10 @@ const updateId = function (scope, newValue, oldValue) {
     // watch 监测值修改需要删除，组件销毁时需要删除
     delete idForVm[oldValue]
   }
-  if (_isEqual(_isUndefined(newValue), false)) {
+  if (_isEqual(_isUndefined(newValue), false) && _isEqual(_has(idForVm, newValue), false)) {
     _set(idForVm, newValue, scope)
+  } else if (_isEqual(_isUndefined(newValue), false)) {
+    console.warn(`${unicomIdName}='${newValue}'的组件已经定义并存在。`)
   }
 }
 // 添加事件
