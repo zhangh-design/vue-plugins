@@ -20,7 +20,7 @@ import _union from 'lodash/union'
 let unicomIdName = ''
 let unicomGroupName = ''
 // vm容器、分组、事件、命名 唯一、推迟触发的事件
-let [vmMap, groupForVm, events, idForVm, sendDefer] = [new Map(), {}, {}, {}, []]
+const [vmMap, groupForVm, events, idForVm, sendDefer] = [new Map(), {}, {}, {}, []]
 // 字符类型数组转一维数组 "['child-a', 'child-b']" => ['child-a','child-b']
 const _strToArray = function (str = '') {
   return _uniq(_flattenDeep(_flatMap(str
@@ -33,13 +33,13 @@ const _strToArray = function (str = '') {
 }
 // 触发执行事件
 const emitEvent = function (method, toKey, aim, args) {
-  let evs = _get(events, method, [])
+  const evs = _get(events, method, [])
   let evLen = 0
-  let len = evs.length
+  const len = evs.length
   // 循环已经注册的指令
   for (evLen; evLen < len; evLen++) {
     // 存储的数据
-    let { fn, scope } = evs[evLen]
+    const { fn, scope } = evs[evLen]
     if (_isEqual(aim, '#')) {
       // id
       if (scope[unicomIdName] !== toKey) {
@@ -48,9 +48,9 @@ const emitEvent = function (method, toKey, aim, args) {
       }
     } else if (_isEqual(aim, '@')) {
       // 分组
-      let group = _get(vmMap.get(scope), 'group', [])
-      let name = _get(scope, unicomGroupName, [])
-      let ns = name ? _union(group, _strToArray(name)) : []
+      const group = _get(vmMap.get(scope), 'group', [])
+      const name = _get(scope, unicomGroupName, [])
+      const ns = name ? _union(group, _strToArray(name)) : []
       if ((_isEmpty(group) || _isEqual(_includes(group, toKey), false)) && _isEqual(ns.includes(toKey), false)) {
         // 目标不存在
         continue
@@ -65,7 +65,7 @@ const emitEvent = function (method, toKey, aim, args) {
 const unicomQuery = function (query, ...args) {
   let [toKey, aim, defer, eventIndex] = ['', '', false, -1]
   // query=instruct1#id1
-  let method = query
+  const method = query
     .replace(/^([`~])/, function (s0, s1) {
       // query=~instruct1#id1
       if (_isEqual(s1, '~')) {
@@ -91,22 +91,22 @@ const unicomQuery = function (query, ...args) {
   }
   // 获取目标 vm
   switch (aim) {
-  case '#':
-    return _get(idForVm, toKey, null)
-  case '@':
-    return _get(groupForVm, toKey, [])
+    case '#':
+      return _get(idForVm, toKey, null)
+    case '@':
+      return _get(groupForVm, toKey, [])
   }
   return eventIndex
 }
 const updateName = function (scope, nv, ov) {
   // 实例上设置分组
-  let vmData = vmMap.get(scope) || {}
-  let group = _get(vmData, 'group', [])
+  const vmData = vmMap.get(scope) || {}
+  const group = _get(vmData, 'group', [])
   // 删除旧的 vm
   if (_isEqual(_isUndefined(ov), false)) {
     _strToArray(ov).forEach(function (key) {
       if (_includes(group, key)) {
-        let vms = groupForVm[key]
+        const vms = groupForVm[key]
         _isEqual(_isUndefined(vms), false) && vms.splice(vms.indexOf(scope), 1)
       }
     })
@@ -150,7 +150,7 @@ const appendEvent = function (method, fn, scope) {
 }
 // 移除事件
 const removeEvent = function (method, scope) {
-  let evs = _get(events, method, [])
+  const evs = _get(events, method, [])
   if (_isEqual(_isEmpty(evs), false)) {
     for (let i = 0; i < evs.length; i++) {
       if (_isEqual(scope, evs[i].scope)) {
@@ -191,9 +191,9 @@ export default {
       },
       // 创建的时候加入事件机制
       beforeCreate () {
-        let opt = this.$options
-        let vmData = {}
-        let [us, uni, group] = [
+        const opt = this.$options
+        const vmData = {}
+        const [us, uni, group] = [
           _get(opt, name, {}),
           (vmData.uni = {}),
           (vmData.group = [])
@@ -214,10 +214,10 @@ export default {
           })
         }
         // 命名分组
-        let groupNameOpt = _get(opt, groupName, [])
+        const groupNameOpt = _get(opt, groupName, [])
         if (_isEqual(_isEmpty(groupNameOpt), false)) {
           _forEach(_uniq(_flattenDeep(_flatMap(groupNameOpt))), item => {
-            let key = _toString(item)
+            const key = _toString(item)
             _isUndefined(_get(groupForVm, key)) && (groupForVm[key] = [])
             group.push(key)
             groupForVm[key].push(this)
@@ -229,14 +229,14 @@ export default {
       },
       created () {
         // 实例命名 唯一
-        let uId = this[idName]
-        let uGroupName = this[groupName]
+        const uId = this[idName]
+        const uGroupName = this[groupName]
         _isEqual(_isEqual(uId, ''), false) && updateId(this, uId)
         _isEqual(_isEmpty(uGroupName), false) && updateName(this, uGroupName)
         // 实例上设置分组
-        let vmData = vmMap.get(this) || {}
+        const vmData = vmMap.get(this) || {}
         for (let i = 0; i < sendDefer.length; i++) {
-          let [method, toKey, aim, args, scope] = sendDefer[i]
+          const [method, toKey, aim, args, scope] = sendDefer[i]
           let flag = false
           if (_isEqual(aim, '#')) {
             if (_isEqual(toKey, uId)) {
@@ -279,32 +279,32 @@ export default {
       // 全局混合，销毁实例的时候销毁事件
       destroyed () {
         // 移除唯一ID
-        let uId = this[idName]
+        const uId = this[idName]
         if (_isEqual(_isEqual(uId, ''), false)) {
           updateId(this, undefined, uId)
         }
         // 移除 命名分组 实例命名
-        let uGroupName = this[groupName]
+        const uGroupName = this[groupName]
         if (_isEqual(_isEmpty(uGroupName), false)) {
           updateName(this, undefined, uGroupName)
         }
-        let vmData = vmMap.get(this)
+        const vmData = vmMap.get(this)
         if (_isUndefined(vmData)) {
           return
         }
         vmMap.delete(this)
 
-        let uni = _get(vmData, 'uni', {})
+        const uni = _get(vmData, 'uni', {})
         // 移除事件
-        for (let key in uni) {
+        for (const key in uni) {
           removeEvent(key, this)
         }
         // 分组，一对多， 单个vm可以多个分组名称 组件命名
-        let group = _get(vmData, 'group', [])
+        const group = _get(vmData, 'group', [])
         _forEach(group, function (name) {
-          let gs = groupForVm[name]
+          const gs = groupForVm[name]
           if (_isEqual(_isUndefined(gs), false)) {
-            let index = gs.indexOf(this)
+            const index = gs.indexOf(this)
             if (index > -1) {
               gs.splice(index, 1)
             }
@@ -315,7 +315,7 @@ export default {
         })
         // 监控销毁 method为空
         for (let i = 0; i < sendDefer.length;) {
-          let pms = sendDefer[i]
+          const pms = sendDefer[i]
           if (_isEqual(pms[0], '') && _isEqual(pms[4], this)) {
             sendDefer.splice(i, 1)
           } else {
@@ -328,7 +328,7 @@ export default {
     // 混入（mixins）时不是简单的覆盖而是追加
     const merge = _get(Vue, 'config.optionMergeStrategies', {})
     merge[name] = merge[unicomGroupName] = function (parentVal, childVal) {
-      let p = parentVal || []
+      const p = parentVal || []
       if (_isEqual(_isUndefined(childVal), false)) {
         p.push(childVal)
       }
