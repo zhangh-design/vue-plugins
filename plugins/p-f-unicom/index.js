@@ -12,7 +12,7 @@ import _keys from 'lodash/keys'
 import _isFunction from 'lodash/isFunction'
 import _uniq from 'lodash/uniq'
 import _flatMap from 'lodash/flatMap'
-import _intersection from 'lodash/intersection'
+import _union from 'lodash/union'
 /**
  * @desc
  * Vue 跨组件通信插件
@@ -50,7 +50,7 @@ const emitEvent = function (method, toKey, aim, args) {
       // 分组
       const group = _get(vmMap.get(scope), 'group', [])
       const name = _get(scope, unicomGroupName, [])
-      const ns = name ? _intersection(group, _strToArray(name)) : []
+      const ns = name ? _union(group, _strToArray(name)) : []
       if ((_isEmpty(group) || _isEqual(_includes(group, toKey), false)) && _isEqual(ns.includes(toKey), false)) {
         // 目标不存在
         continue
@@ -113,7 +113,7 @@ const updateName = function (scope, nv, ov) {
   }
   // 增加新的
   if (_isEqual(_isUndefined(nv), false)) {
-    _intersection(_strToArray(nv), vmData.group).forEach(function (key) {
+    _union(_strToArray(nv), vmData.group).forEach(function (key) {
       let vms = groupForVm[key]
       if (_isUndefined(vms)) {
         vms = groupForVm[key] = []
