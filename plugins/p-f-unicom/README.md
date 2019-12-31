@@ -65,8 +65,7 @@ index.vue （发布）
 <template>
   <div>
     // unicom-id 不能和其它组件所定的 unicom-id 相同
-    // unicom-group 定义的组必须是 child 组件内 `unicomGroup` 所定义的数据，不能随意定义组的名称
-    // 不定义默认使用 child 组件内的 `unicomGroup`
+    // unicom-group 定义组的名称数组，会和组件内的 `unicomGroup` 合并并去重 ，不定义默认使用 child 组件内的 `unicomGroup`
     <child unicom-id="child-id" unicom-group="['group', 'group1']"></child>
   </div>
 </template>
