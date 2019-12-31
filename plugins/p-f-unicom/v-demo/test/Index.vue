@@ -31,6 +31,7 @@
         </li>
         <li><button @click="doSend6">#child-id 获取指定组件</button></li>
         <li><button @click="doSend7">@child-a 获取指定分组组件</button></li>
+        <li><button @click="doSend13">@child-c 获取指定分组组件</button></li>
         <li>
           <button @click="doSend8">
             指令延迟发送，直到包含有 `message3` 指令的组件出现
@@ -132,6 +133,10 @@ export default {
       this.$unicom('~#child-id2', function (childVm) {
         console.info('监听命名 child-id2 的组件出现 ', childVm)
       })
+    },
+    doSend13 () {
+      const childs = this.$unicom('@child-c')
+      console.info(childs)
     },
     doDestroy () {
       this.showStatus = !this.showStatus

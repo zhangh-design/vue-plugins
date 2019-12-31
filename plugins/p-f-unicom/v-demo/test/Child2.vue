@@ -7,7 +7,9 @@
 </template>
 
 <script>
+import base from './base.js'
 export default {
+  mixins: [base],
   unicomGroup: ['child-f'],
   unicom: {
     message3 (sender, text1, text2) {
