@@ -23,13 +23,7 @@ let unicomGroupName = ''
 const [vmMap, groupForVm, events, idForVm, sendDefer] = [new Map(), {}, {}, {}, []]
 // 字符类型数组转一维数组 "['child-a', 'child-b']" => ['child-a','child-b']
 const _strToArray = function (str = '') {
-  return _uniq(_flattenDeep(_flatMap(str
-    .replace(/(\[)/g, '')
-    .replace(/(\])/g, '')
-    .replace(/'/g, '')
-    .replace(/"/g, '')
-    .replace(/\s+/g, '')
-    .split(','))))
+  return _uniq(_flattenDeep(_flatMap((str.replace(/(\[|\]|"|'|\s+)/g, '')).split(','))))
 }
 // 触发执行事件
 const emitEvent = function (method, toKey, aim, args) {
