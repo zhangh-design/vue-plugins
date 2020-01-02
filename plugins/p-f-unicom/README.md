@@ -66,7 +66,7 @@ index.vue （发布）
   <div>
     // unicom-id 不能和其它组件所定的 unicom-id 相同
     // unicom-group 定义组的名称数组，会和组件内的 `unicomGroup` 合并并去重 ，不定义默认使用 child 组件内的 `unicomGroup`
-    <child unicom-id="child-id" unicom-group="['group', 'group1']"></child>
+    <child unicom-id="child-id" :unicom-group="unicomGroup"></child>
   </div>
 </template>
 <script>
@@ -75,6 +75,11 @@ index.vue （发布）
     components: {
       Child
     },
+		data(){
+			return {
+				unicomGroup: ['group', 'group1']
+			}
+		},
     methods: {
       doExec () {
         // 发布订阅消息，会自动调用 child 组件内订阅的 `message` 指令
