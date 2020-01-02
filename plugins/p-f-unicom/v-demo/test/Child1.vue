@@ -2,7 +2,7 @@
   <div style="border: 1px solid blue; margin-top: 10px;">
     <p>{{ codeName }}</p>
     <p>unicomId={{ unicomId || '123' }}</p>
-    <p>unicomGroup=['child-a', 'child-c']</p>
+    <p>unicomGroup=['child-a', 'child-c', 'child-z']</p>
   </div>
 </template>
 

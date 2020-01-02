@@ -21,11 +21,13 @@ let unicomIdName = ''
 let unicomGroupName = ''
 // vm容器、分组、事件、命名 唯一、推迟触发的事件
 const [vmMap, groupForVm, events, idForVm, sendDefer] = [new Map(), {}, {}, {}, []]
-// 字符类型数组转一维数组 "['child-a', 'child-b']" => ['child-a','child-b']
-const _strToArray = function (str = '') {
-  return _uniq(_flattenDeep(_flatMap((str.replace(/(\[|\]|"|'|\s+)/g, '')).split(','))))
-}
-// 触发执行事件
+/**
+ * @desc 触发执行事件
+ * @param {string} method - 指令的名称
+ * @param {string} toKey - 目标组件的 unicomId 或者 unicomGroup
+ * @param {string} aim - 标识 （#）
+ * @param {Array} args - 参数
+ */
 const emitEvent = function (method, toKey, aim, args) {
   const evs = _get(events, method, [])
   let evLen = 0
@@ -43,9 +45,7 @@ const emitEvent = function (method, toKey, aim, args) {
     } else if (_isEqual(aim, '@')) {
       // 分组
       const group = _get(vmMap.get(scope), 'group', [])
-      const name = _get(scope, unicomGroupName, [])
-      const ns = name ? _union(group, _strToArray(name)) : []
-      if ((_isEmpty(group) || _isEqual(_includes(group, toKey), false)) && _isEqual(ns.includes(toKey), false)) {
+      if (_isEmpty(group) || _isEqual(_includes(group, toKey), false)) {
         // 目标不存在
         continue
       }
@@ -55,7 +55,11 @@ const emitEvent = function (method, toKey, aim, args) {
   // 返回被触发的指令
   return evLen
 }
-// 发送容器 或者 获得 目标容器
+/**
+ * @desc 发送容器 或者 获得 目标容器
+ * @param {string} query - 指令名称 （~instruct1#id1）
+ * @param  {...any} args - 可变参数
+ */
 const unicomQuery = function (query, ...args) {
   let [toKey, aim, defer, eventIndex] = ['', '', false, -1]
   // query=instruct1#id1
@@ -92,48 +96,72 @@ const unicomQuery = function (query, ...args) {
   }
   return eventIndex
 }
+/**
+ * @desc 更新分组
+ * @param {Object} scope - 组件的实例
+ * @param {string[]} nv - 指令 unicom-group 传入的组数据 （新）
+ * @param {string[]} [ov] - 指令 unicom-group 传入的组数据 （旧）
+ */
 const updateName = function (scope, nv, ov) {
   // 实例上设置分组
   const vmData = vmMap.get(scope) || {}
   const group = _get(vmData, 'group', [])
   // 删除旧的 vm
   if (_isEqual(_isUndefined(ov), false)) {
-    _strToArray(ov).forEach(function (key) {
+    _uniq(_flattenDeep(_flatMap(ov))).forEach(function (key) {
       if (_includes(group, key)) {
-        const vms = groupForVm[key]
-        _isEqual(_isUndefined(vms), false) && vms.splice(vms.indexOf(scope), 1)
+        const vms = _get(groupForVm, key, [])
+        _isEqual(_isEmpty(vms), false) && vms.splice(vms.indexOf(scope), 1)
+        if (_isEmpty(vms)) {
+          group.splice(group.indexOf(key), 1)
+          Reflect.deleteProperty(groupForVm, key)
+        }
       }
     })
   }
   // 增加新的
   if (_isEqual(_isUndefined(nv), false)) {
-    _union(_strToArray(nv), vmData.group).forEach(function (key) {
-      let vms = groupForVm[key]
-      if (_isUndefined(vms)) {
-        vms = groupForVm[key] = []
+    _uniq(_flattenDeep(_flatMap(nv))).forEach(function (key) {
+      const vms = _get(groupForVm, key, [])
+      if (_isEmpty(vms)) {
+        _set(groupForVm, key, vms)
       }
+      // 新添加 组件 到组里面
       if (_isEqual(_includes(vms, scope), false)) {
         vms.push(scope)
+      }
+      if (_isEqual(_includes(group, key), false)) {
+        group.push(key)
       }
     })
   }
 }
-// 更新 unicomId
+/**
+ * @desc 更新 unicomId
+ * @param {Object} scope - 组件的实例
+ * @param {string} newValue - 指令 unicom-id 传入的id数据 （新）
+ * @param {string} [oldValue] - 指令 unicom-id 传入的id数据 （旧）
+ */
 const updateId = function (scope, newValue, oldValue) {
   if (_isEqual(newValue, oldValue)) {
     return
   }
   if (_isEqual(_isUndefined(oldValue), false) && _isEqual(_get(idForVm, oldValue), scope)) {
     // watch 监测值修改需要删除，组件销毁时需要删除
-    delete idForVm[oldValue]
+    Reflect.deleteProperty(idForVm, oldValue)
   }
   if (_isEqual(_isUndefined(newValue), false) && _isEqual(_has(idForVm, newValue), false)) {
     _set(idForVm, newValue, scope)
-  } else if (_isEqual(_isUndefined(newValue), false)) {
+  } else if (_isEqual(_isUndefined(newValue), false) && _has(idForVm, newValue)) {
     console.warn(`${unicomIdName}='${newValue}'的组件已经定义并存在。`)
   }
 }
-// 添加事件
+/**
+ * @desc 添加事件
+ * @param {string} method - 指令的名称
+ * @param {function} fn - 指令名称对应的函数
+ * @param {Object} scope - 指令名称对应函数所运行的作用域
+ */
 const appendEvent = function (method, fn, scope) {
   if (_isEqual(_has(events, method), false)) {
     events[method] = []
@@ -142,7 +170,11 @@ const appendEvent = function (method, fn, scope) {
     events[method].push({ fn, scope, method })
   }
 }
-// 移除事件
+/**
+ * @desc 移除事件
+ * @param {string} method - 指令的名称
+ * @param {Object} scope - 指令名称对应函数所运行的作用域
+ */
 const removeEvent = function (method, scope) {
   const evs = _get(events, method, [])
   if (_isEqual(_isEmpty(evs), false)) {
@@ -171,16 +203,19 @@ export default {
         },
         // 分组（纯字符串类数组不能是真实的数组） unicom-group="['child-a', 'child-b']"
         [groupName]: {
-          type: String,
-          default: ''
+          type: Array,
+          default: () => []
         }
       },
       watch: {
         [idName] (nv, ov) {
           updateId(this, nv, ov)
         },
-        [groupName] (nv, ov) {
-          updateName(this, nv, ov)
+        [groupName]: {
+          deep: true,
+          handler (nv, ov) {
+            updateName(this, nv, ov);
+          }
         }
       },
       // 创建的时候加入事件机制
@@ -277,11 +312,13 @@ export default {
         if (_isEqual(_isEqual(uId, ''), false)) {
           updateId(this, undefined, uId)
         }
-        // 移除 命名分组 实例命名
-        const uGroupName = this[groupName]
-        if (_isEqual(_isEmpty(uGroupName), false)) {
-          updateName(this, undefined, uGroupName)
+        // 移除 命名分组、实例命名
+        const uGroupName = _get(this, groupName, [])
+        const optGroupName = _get(this.$options, groupName, [])
+        if (_isEqual(_isEmpty(uGroupName), false) || _isEqual(_isEmpty(optGroupName), false)) {
+          updateName(this, undefined, _union(uGroupName, optGroupName))
         }
+
         const vmData = vmMap.get(this)
         if (_isUndefined(vmData)) {
           return

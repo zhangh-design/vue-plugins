@@ -3,12 +3,12 @@
     <child
       v-if="showStatus"
       unicom-id="child-id"
-      unicom-group="['child-a', 'child-b', 'child-c']"
+      :unicom-group="childGroup"
     ></child>
     <child1
-      v-if="showStatus"
+      v-if="showStatusChild1"
       unicom-id="child-id1"
-      unicom-group="['child-z','child-a']"
+      :unicom-group="child1Group"
     ></child1>
     <child2 v-if="showStatusChild2" unicom-id="child-id2"></child2>
     <div style="margin-top: 10px;">
@@ -47,7 +47,9 @@
             指令延迟发送，直到出现命名 child-id2 的组件
           </button>
         </li>
-        <li><button @click="doDestroy">销毁</button></li>
+        <li><button @click="doSend14">更新 Child1 组件的 unicom-group 组信息</button></li>
+        <li><button @click="doDestroyChild1">销毁组件Child1</button></li>
+        <li><button @click="doDestroyAll">销毁所有组件</button></li>
       </ul>
     </div>
   </div>
@@ -68,7 +70,10 @@ export default {
     return {
       message: '跨组件通信插件',
       showStatus: true,
-      showStatusChild2: false
+      showStatusChild1: true,
+      showStatusChild2: false,
+      childGroup: ['child-a', 'child-b', 'child-c'],
+      child1Group: ['child-z', 'child-a']
     }
   },
   myCodeP: {},
@@ -138,9 +143,16 @@ export default {
       const childs = this.$unicom('@child-c')
       console.info(childs)
     },
-    doDestroy () {
-      this.showStatus = !this.showStatus
-      // this.showStatusChild2 = !this.showStatusChild2
+    doSend14 () {
+      this.child1Group = ['child-h']
+    },
+    doDestroyChild1 () {
+      this.showStatusChild1 = false
+    },
+    doDestroyAll () {
+      this.showStatus = false
+      this.showStatusChild1 = false
+      this.showStatusChild2 = false
     }
   }
 }
