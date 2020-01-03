@@ -69,11 +69,13 @@ export default {
 
 > 注意：增量添加的滤数据也是全局有效的
 
+参数：
 
-
-名称 | 类型 | 属性 | 默认值 | 描述
----|---|---|---|---|---
-dict | Object |  | {} | 过滤数据对象
+参数 | 类型 | 属性 | 默认值 | 描述
+---|---|---|---|---
+userApiConfigModuleList | Object | 必填 | {} | api接口模型配置对象集合
+userApiConfig | Object | 可选 | {} | api接口模型配置参数
+userAxiosConfig | Object | 可选 | {} | axios实例配置参数
 
 
 > 示例
