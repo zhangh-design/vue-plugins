@@ -10,6 +10,7 @@ plugins
 p-f-unicom | Vue 自定义插件，解决了 Vue 中非父子组件通讯的痛点
 p-f-link | Vue 组件获取其它组件实例插件 （无视组件层级、子孙关系）
 p-f-const | Vue 自定义常量注册 computed 计算属性插件
+p-f-life | Vue 自定义全局生命周期插件
 
 filters
 
