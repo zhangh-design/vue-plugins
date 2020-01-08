@@ -1,6 +1,6 @@
 /**
  * Vue 自定义全局生命周期插件
- * 一次性生命周期函数，依赖于 beforeCreate、created、mounted 的 Vue 本身的钩子函数上
+ * 一次性生命周期函数
  */
 import _has from 'lodash/has'
 import _isEqual from 'lodash/isEqual'
@@ -10,13 +10,14 @@ import _forEach from 'lodash/forEach'
 import _isNil from 'lodash/isNil'
 import _isFunction from 'lodash/isFunction'
 import _assign from 'lodash/assign'
-
+import _bind from 'lodash/bind'
+import _isEmpty from 'lodash/isEmpty'
 /**
  * name 组件中的 $options['life'] 配置名称
  * hooksOpt 自定义钩子函数配置
  * hookDefaultName 默认钩子函数名称
  * hookLives 存放组件自定义 life 对象
- * hookEmitData 全局自定义参数
+ * hookEmitData emit事件中的自定义参数 （emit('user', {'age': 16}) {'age':16 将会设置到 hookEmitData 对象中}）
  */
 let [name, hooksOpt, hookDefaultName, hookLives, hookEmitData] = [
   'life',
@@ -33,8 +34,11 @@ function getHookLife (that) {
   let life = _get(hookLives, that._uid)
   if (_isNil(life)) {
     life = hookLives[that._uid] = {
+      // @ts-ignore
       that,
+      // @ts-ignore
       ready: {},
+      // @ts-ignore
       data: _assign({}, hookEmitData)
     }
   }
@@ -45,13 +49,13 @@ function getHookEmitData (key, that) {
   return _isNil(key) ? data : _get(data, key)
 }
 /**
- * @desc
+ * @desc 添加组件对应的 hookLife 对象
  * @param {Object} that - 组件的实例对象
- * @param {String} vueHookName - 组件中的 Vue 钩子函数名称 （beforeCreate、created、mounted）
+ * @param {String} vueHookName - 组件中的 Vue 钩子函数名称 （beforeCreate、created、mounted...）
  */
 function addHookLives (that, vueHookName) {
   const life = getHookLife(that)
-  _set(life.ready, vueHookName, true)
+  _set(life, `ready.${vueHookName}`, true)
   if (_isEqual(vueHookName, hookDefaultName) && _has(life, 'callback') && _isFunction(life.callback)) {
     // 事件中的 then 函数
     life.callback()
@@ -66,7 +70,7 @@ function addHookLives (that, vueHookName) {
  */
 function hookEmit (key, data, that) {
   const hookData = getHookEmitData(null, that)
-  _set(hookData, key, data)
+  _isEqual(_has(hookEmitData, key), false) && _set(hookData, key, data)
   if (_isEqual(_isNil(that), false)) {
     _hookExec(key, getHookLife(that), _get(hookData, key))
     return
@@ -84,6 +88,7 @@ function hookEmitEvent (life, key) {
   return {
     data: _get(life.data, key, {}),
     emit: function (key, value = {}) {
+      // 如果 emit 事件在 created 钩子函数中定义，那么下面的 hookEmit 会在 mounted 钩子函数前得到执行
       hookEmit(key, value, life.that)
     },
     then: function (callback) {
@@ -112,12 +117,12 @@ function _hookExec (key, life, data) {
   ) {
     return
   }
-  const lives = _get(life.that.$options, name, [])
+  const lives = _get(life, `that.$options.${name}`, [])
   let lifeFn = null
   for (let i = 0; i < lives.length; i += 1) {
     lifeFn = _get(lives[i], key)
     if (_isEqual(_isNil(lifeFn), false) && _isFunction(lifeFn)) {
-      lifeFn.call(life.that, hookEmitEvent(life, key))
+      _bind(lifeFn, life.that, hookEmitEvent(life, key))()
     }
   }
 }
@@ -145,7 +150,7 @@ export default {
         for (lifeName in lives[i]) {
           if (
             _isEqual(_has(readies, lifeName), false) &&
-            (hooks[lifeName] || hookDefaultName) === vueHookName
+            (_get(hooks, lifeName, hookDefaultName)) === vueHookName
           ) {
             _set(readies, lifeName, true)
             _hookExec(lifeName, life, getHookEmitData(lifeName, that))
@@ -160,7 +165,7 @@ export default {
             // prepose 触发 emit
             hookEmit('prepose', {}, this)
           }
-          // 触发 emit 定义的事件，晚于传入的 init 函数执行
+          // 真正触发 emit 定义的事件，晚于传入的 init 函数执行
           hookExecByVM(this, key)
         }
       }
@@ -173,6 +178,7 @@ export default {
       init(
         {
           emit (key, data = {}) {
+            // hookEmit(key, data) 为了把 data 参数放入到 hookEmitData 对象中，后面执行 hookExecByVM 时可以从 hookEmitData 对象中拿取
             _isEqual(_isNil(key), false) && hookEmit(key, data)
           },
           vue,
@@ -191,8 +197,8 @@ export default {
     vue.mixin({
       ...mixinOpt,
       destroyed () {
-        const life = _get(this.$options, name)
-        if (_isEqual(_isNil(life), false)) {
+        const lives = _get(this.$options, name, [])
+        if (_isEqual(_isEmpty(lives), false)) {
           for (const k in hookLives) {
             if (this === _get(hookLives[k], 'that')) {
               delete hookLives[k]
