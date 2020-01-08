@@ -1,7 +1,7 @@
 # vue-plugins
 vue在使用过程中的一些自定义扩展插件
 
-注意：为了方便 plugins、filters 中都有使用到 lodash 库，请先安装 lodash 到项目中。
+注意：为了方便 plugins、filters、directives 中都有使用到 lodash 库，请先安装 lodash 到项目中。
 
 plugins
 
