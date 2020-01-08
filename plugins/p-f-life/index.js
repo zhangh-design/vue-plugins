@@ -3,6 +3,7 @@
  * 注意：
  * 如果依赖的是 beforeCreate、created、mounted 的话是一次性生命周期函数
  * 如果依赖的是 updated 的话也会多次触发自定义生命周期钩子函数
+ * 自定义生命周期函数将在 mixin 混入的 Vue 生命周期之中执行所以将会在组件的 Vue 生命周期之前执行掉
  */
 import _has from 'lodash/has'
 import _isEqual from 'lodash/isEqual'
