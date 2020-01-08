@@ -19,6 +19,17 @@ export default {
     readShop ({ then, data, emit }) {
       // 当前组件 created 钩子函数前执行
       console.info('readShop', data, this.name)
+      // 再次通过 emit 触发其它函数
+      emit('afterReadShop', { name: '小框' })
+      then(() => {
+        // 将会在 created之后mounted之前得到执行
+        console.info('readShop.callback');
+      })
+    },
+    afterReadShop ({ then, emit, data }) {
+      // 将会在 created之后mounted之前得到执行
+      // 因为默认不指定生命周期的自定义钩子函数会依赖到 mounted 中（可以通过 hookDefault 参数来重新设置默认 Vue 生命周期钩子函数）
+      console.info('afterReadShop', data);
     },
     uploadImage () {
       // 当前组件 mounted 钩子函数前执行
@@ -34,8 +45,7 @@ export default {
       name: 'life 子组件',
       myStatus: false
     }
-	},
-	// 自定义生命周期钩子函数将会运行于下面的 Vue 钩子函数之前
+  },
   beforeCreate () {
     console.info('beforeCreate...');
   },
