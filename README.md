@@ -23,3 +23,4 @@ directives
 插件 | 说明
 ---|---
 v-f-ref | Vue 中优雅的获取任意跨层级子孙组件的实例对象（杜绝业务复杂时使用 parent、children）
+v-f-focus | input 控件自动设置焦点指令
