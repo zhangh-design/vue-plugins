@@ -18,6 +18,7 @@ filters
 插件 | 说明
 ---|---
 data-dict-filter | 数据字典 Vue 全局过滤器载入 插件（在模板中使用）
+common-filter | Vue 全局过滤器载入 插件（在模板中使用）
 
 directives 
 
