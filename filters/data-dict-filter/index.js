@@ -1,7 +1,7 @@
 /**
  * 数据字典 Vue 全局过滤器（在模板中使用）
  * <div>{{0 | SEX_TYPE}}</div>
- * 例如在 methods 中请使用Vue根实例过滤转换器 plugins/root-filters.js
+ * 例如在 methods 中请使用 Vue 根实例过滤转换器 js-libs/root-filters.js
  */
 import Vue from 'vue'
 import dictionary from './data-dict.js'
