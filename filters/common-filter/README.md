@@ -14,6 +14,8 @@ main.js 导入 common-filter.js 插件
 ##### 注意：
 默认的全局过滤器文件存放在`filters/common-filter/source.js`文件中，如果需要新增或修改请操作此配置文件，但这里定义的函数仅仅是非常公用的（比如：去除空格函数、时间格式化），如果是某个或某些模块特定的处理函数请在工程中创建文件然后引入插件中。
 
+![image](http://m.qpic.cn/psc?/V12UXEll2JjLTU/S1G4*2hi*D5aPIJug2nMa5XdrqfM9Ap6HMxYEm4dXgwFDgHR2nJV1celuUSI1ZRubqUsxah9tZUlYpkRhsQ7vW8Me3Xg6Bkc1bflRDGYXmo!/b&bo=OQF5AAAAAAARB3E!&rf=viewer_4&t=5)
+
 ```
 import Vue from 'vue'
 import App from './App.vue'
