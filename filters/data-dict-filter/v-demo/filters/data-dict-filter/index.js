@@ -12,6 +12,7 @@ import _get from 'lodash/get'
 
 class DataDictFilter {
   constructor () {
+    this.filterKeys = []
     this.init()
   }
 
@@ -21,11 +22,14 @@ class DataDictFilter {
   init () {
     Object.keys(dictionary).forEach(key => {
       // 全局过滤器
-      Vue.filter(key.toUpperCase(), function (value) {
-        if (value.length) return;
-        const tar = dictionary[key].find(item => item.paramValue === value) || {}
-        return tar.paramDesc
-      })
+      if (!this.filterKeys.includes(key.toUpperCase())) {
+        this.filterKeys.push(key.toUpperCase())
+        Vue.filter(key.toUpperCase(), function (value) {
+          if (value.length) return;
+          const tar = dictionary[key].find(item => item.paramValue === value) || {}
+          return tar.paramDesc
+        })
+      }
     })
   }
 
@@ -38,13 +42,58 @@ class DataDictFilter {
    */
   add (dict = {}) {
     const omitDict = _omit(dict, Object.keys(dictionary))
-    _forEach(omitDict, function (configOpt, key) {
-      Vue.filter(key.toUpperCase(), function (value) {
-        if (value.length) return;
-        const tar = configOpt.find(item => item.paramValue === value) || {}
-        return _get(tar, 'paramDesc')
-      })
+    _forEach(omitDict, (configOpt, key) => {
+      if (!this.filterKeys.includes(key.toUpperCase())) {
+        this.filterKeys.push(key.toUpperCase())
+        Vue.filter(key.toUpperCase(), function (value) {
+          if (value.length) return;
+          const tar = configOpt.find(item => item.paramValue === value) || {}
+          return _get(tar, 'paramDesc')
+        })
+      }
     })
+  }
+
+  /**
+   * @desc 加载外部文件
+   * @param  {...Promise} promised - 需要动态加载的具有 promise 返回对象的函数
+   */
+  import (...promised) {
+    return new Promise((resolve, reject) => {
+      let [matching, matched, p] = [promised.length, 0, null]
+      while ((p = promised.shift())) {
+        p.then(defines => {
+          if (Object.prototype.hasOwnProperty.call(defines, 'default')) {
+            this._append(defines.default)
+          } else {
+            this._append(defines)
+          }
+          ++matched
+          if (matched === matching) {
+            resolve()
+          }
+        }).catch(e => {
+          reject(e)
+        })
+      }
+    })
+  }
+
+  /**
+   * @desc 动态添加全局过滤函数
+   * @param  {object} defines={} -
+   */
+  _append (defines = {}) {
+    for (const [key, elem] of Object.entries(defines)) {
+      if (Object.prototype.hasOwnProperty.call(defines, key) && !this.filterKeys.includes(elem.name)) {
+        this.filterKeys.push(key.toUpperCase())
+        Vue.filter(key.toUpperCase(), function (value) {
+          if (value.length) return;
+          const tar = elem.find(item => item.paramValue === value) || {}
+          return _get(tar, 'paramDesc')
+        })
+      }
+    }
   }
 }
 export default new DataDictFilter()

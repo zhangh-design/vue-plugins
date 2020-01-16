@@ -83,3 +83,29 @@ import DataDictFilter from './filters/data-dict-filter/index.js'
 const myDict = {"DIRECTION_TYPE": [{'paramValue': 0, 'paramDesc': '北'},{'paramValue': 1, 'paramDesc': '东'}]}
 DataDictFilter.add(myDict)
 ```
+
+> 函数：import(...promised)
+
+> 说明：加载外部文件添加过滤数据
+
+> 注意：
+
+- 需要动态加载的具有 promise 返回对象的函数
+- `import` 方式导入的文件不一定在组件渲染后就能用，因为这里的载入是异步的，除非你确定已经加载完成。
+
+参数：
+
+参数 | 类型 | 属性 | 默认值 | 描述
+---|---|---|---|---
+promised | Promise | 必填 | [] | 具有 promise 返回对象的函数
+
+
+> 示例
+
+```
+import DataDictFilter from './filters/data-dict-filter/index.js'
+
+DataDictFilter.import(import('./utils/dict1.js')).then(() => {
+  // 载入成功完成
+})
+```

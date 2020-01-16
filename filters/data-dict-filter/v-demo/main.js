@@ -13,6 +13,10 @@ const myDict = {
   ]
 };
 DataDictFilter.add(myDict);
+// 载入外部配置文件
+DataDictFilter.import(import('./service/dict1.js')).then(() => {
+  // 加载成功完成
+})
 Vue.config.productionTip = false;
 
 new Vue({
