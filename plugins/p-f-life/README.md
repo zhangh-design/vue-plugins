@@ -84,7 +84,7 @@ life: {
   }
 ```
 
-![image](http://m.qpic.cn/psc?/V12UXEll2JjLTU/S1G4*2hi*D5aPIJug2nMa6HJ3InjEYWYGrYAECh4K8Spiy8gvW4M.xMb*V3bLqilywEwRVlHSzCmkj0ZsuHXGqTFfh5l73kS39r3aUSUSLQ!/b&bo=MAFGAQAAAAARB0Y!&rf=viewer_4&t=5)
+![image](http://i2.tiimg.com/717460/2366bdfc7216c308.jpg)
 
 ##### 示例
 

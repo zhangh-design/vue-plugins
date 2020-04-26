@@ -82,7 +82,7 @@ new Vue({
 
 ##### 示例
 
-![image](http://m.qpic.cn/psc?/V12UXEll2JjLTU/S1G4*2hi*D5aPIJug2nMawepNJub60l3laqQhJKjXPXAm8G*JTmFISWqa3tVGzF0xp5.99pd6EJE38Z6HBssW46UFX.9Rb2rpXHfsdxarUY!/b&bo=UAX9AgAAAAARB5o!&rf=viewer_4&t=5)
+![image](http://i2.tiimg.com/717460/7b50b6508addb9f3.jpg)
 
 APP.vue
 
