@@ -82,7 +82,7 @@ new Vue({
 
 ##### 示例
 
-![image](http://i2.tiimg.com/717460/7b50b6508addb9f3.jpg)
+![image](./1.jpg)
 
 APP.vue
 

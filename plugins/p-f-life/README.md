@@ -84,7 +84,7 @@ life: {
   }
 ```
 
-![image](http://i2.tiimg.com/717460/2366bdfc7216c308.jpg)
+![image](./1.jpg)
 
 ##### 示例
 

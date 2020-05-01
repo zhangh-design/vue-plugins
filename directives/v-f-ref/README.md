@@ -20,7 +20,7 @@ Vue.use(callRef, { name: 'f-ref' })
 
 场景：A组件有B、C、D三个子组件，B组件有一个J子组件，C组件有E、F两个子组件。
 
-![image](http://i2.tiimg.com/717460/113614a66b7f7986.jpg)
+![image](./1.jpg)
 
 A组件`provide`对子孙组件提供三个接口：
 ```
